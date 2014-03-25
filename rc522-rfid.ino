@@ -84,7 +84,7 @@ void setup()
 void loop()
 {
   /* Temporary loop counter */
-  byte i;
+  uint8_t i;
 
   /* Has a card been detected? */
   if (RC522.isCard())
@@ -101,6 +101,9 @@ void loop()
       Serial.print(" ");
     }
     Serial.println();
-    Serial.println();
   }
+  else
+      Serial.println("Card NOT detected:");
+      
+  delay(1000);
 }
