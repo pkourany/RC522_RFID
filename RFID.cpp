@@ -19,7 +19,7 @@
  * Construct RFID
  * uint8_t chipSelectPin RFID /ENABLE pin
  */
-RFID::RFID(v chipSelectPin, uint8_t NRSTPD)
+RFID::RFID(uint8_t chipSelectPin, uint8_t NRSTPD)
 {
 	_chipSelectPin = chipSelectPin;
 
@@ -33,7 +33,7 @@ RFID::RFID(v chipSelectPin, uint8_t NRSTPD)
 }
 
 
-RFID::RFID(int chipSelectPin, int NRSTPD, uint8_t mosiPin, uint8_t misoPin, uint8_t clockPin) {
+RFID::RFID(uint8_t chipSelectPin, uint8_t NRSTPD, uint8_t mosiPin, uint8_t misoPin, uint8_t clockPin) {
   _mosiPin = mosiPin;
   _misoPin = misoPin;
   _clockPin = clockPin;
@@ -73,7 +73,7 @@ RFID::RFID(int chipSelectPin, int NRSTPD, uint8_t mosiPin, uint8_t misoPin, uint
 	uint8_t status;
 	uint8_t str[MAX_LEN];
 
-	// Anti-colisiÃ³n, devuelva el nÃºmero de serie de tarjeta de 4 bytes
+	// Anti-colisiÃƒÂ³n, devuelva el nÃƒÂºmero de serie de tarjeta de 4 bytes
 	status = anticoll(str);
 	memcpy(serNum, str, 5);
 
@@ -126,7 +126,7 @@ void RFID::writeMFRC522(uint8_t addr, uint8_t val)
     softSPITranser((addr<<1)&0x7E);	
     softSPITranser(val);
 #else
-    //0XXXXXX0 formato de direcciÃ³n
+    //0XXXXXX0 formato de direcciÃƒÂ³n
     SPI.transfer((addr<<1)&0x7E);	
     SPI.transfer(val);
 #endif	
@@ -136,9 +136,9 @@ void RFID::writeMFRC522(uint8_t addr, uint8_t val)
 
 
 /*
- *  Read_MFRC522 Nombre de la funciÃ³n: Read_MFRC522
- *  DescripciÃ³n: Desde el MFRC522 leer un byte de un registro de datos
- *  Los parÃ¡metros de entrada: addr - la direcciÃ³n de registro
+ *  Read_MFRC522 Nombre de la funciÃƒÂ³n: Read_MFRC522
+ *  DescripciÃƒÂ³n: Desde el MFRC522 leer un byte de un registro de datos
+ *  Los parÃƒÂ¡metros de entrada: addr - la direcciÃƒÂ³n de registro
  *  Valor de retorno: Devuelve un byte de datos de lectura
  */
 uint8_t RFID::readMFRC522(uint8_t addr)
@@ -200,7 +200,7 @@ void RFID::calculateCRC(uint8_t *pIndata, uint8_t len, uint8_t *pOutData)
 	}
     writeMFRC522(CommandReg, PCD_CALCCRC);
 
-	// Esperar a la finalizaciÃ³n de cÃ¡lculo del CRC
+	// Esperar a la finalizaciÃƒÂ³n de cÃƒÂ¡lculo del CRC
     i = 0xFF;
     do 
     {
@@ -209,7 +209,7 @@ void RFID::calculateCRC(uint8_t *pIndata, uint8_t len, uint8_t *pOutData)
     }
     while ((i!=0) && !(n&0x04));			//CRCIrq = 1
 
-	//Lea el cÃ¡lculo de CRC
+	//Lea el cÃƒÂ¡lculo de CRC
     pOutData[0] = readMFRC522(CRCResultRegL);
     pOutData[1] = readMFRC522(CRCResultRegM);
 }
@@ -225,13 +225,13 @@ uint8_t RFID::MFRC522ToCard(uint8_t command, uint8_t *sendData, uint8_t sendLen,
 
     switch (command)
     {
-        case PCD_AUTHENT:		// Tarjetas de certificaciÃ³n cerca
+        case PCD_AUTHENT:		// Tarjetas de certificaciÃƒÂ³n cerca
 		{
 			irqEn = 0x12;
 			waitIRq = 0x10;
 			break;
 		}
-		case PCD_TRANSCEIVE:	//La transmisiÃ³n de datos FIFO
+		case PCD_TRANSCEIVE:	//La transmisiÃƒÂ³n de datos FIFO
 		{
 			irqEn = 0x77;
 			waitIRq = 0x30;
@@ -241,9 +241,9 @@ uint8_t RFID::MFRC522ToCard(uint8_t command, uint8_t *sendData, uint8_t sendLen,
 			break;
     }
 
-    writeMFRC522(CommIEnReg, irqEn|0x80);	//De solicitud de interrupciÃ³n
-    clearBitMask(CommIrqReg, 0x80);			// Borrar todos los bits de peticiÃ³n de interrupciÃ³n
-    setBitMask(FIFOLevelReg, 0x80);			//FlushBuffer=1, FIFO de inicializaciÃ³n
+    writeMFRC522(CommIEnReg, irqEn|0x80);	//De solicitud de interrupciÃƒÂ³n
+    clearBitMask(CommIrqReg, 0x80);			// Borrar todos los bits de peticiÃƒÂ³n de interrupciÃƒÂ³n
+    setBitMask(FIFOLevelReg, 0x80);			//FlushBuffer=1, FIFO de inicializaciÃƒÂ³n
 
 	writeMFRC522(CommandReg, PCD_IDLE);	//NO action;Y cancelar el comando
 
@@ -261,7 +261,7 @@ uint8_t RFID::MFRC522ToCard(uint8_t command, uint8_t *sendData, uint8_t sendLen,
 	}   
 
 	// A la espera de recibir datos para completar
-	i = 2000;	//i????????,??M1???????25ms	??? i De acuerdo con el ajuste de frecuencia de reloj, el tiempo mÃ¡ximo de espera operaciÃ³n M1 25ms tarjeta??
+	i = 2000;	//i????????,??M1???????25ms	??? i De acuerdo con el ajuste de frecuencia de reloj, el tiempo mÃƒÂ¡ximo de espera operaciÃƒÂ³n M1 25ms tarjeta??
     do 
     {
 		//CommIrqReg[7..0]
@@ -327,9 +327,9 @@ uint8_t RFID::MFRC522ToCard(uint8_t command, uint8_t *sendData, uint8_t sendLen,
 
 
 /*
- *  Nombre de la funciÃ³n: MFRC522_Request
- *  DescripciÃ³n: Buscar las cartas, leer el nÃºmero de tipo de tarjeta
- *  Los parÃ¡metros de entrada: reqMode - encontrar el modo de tarjeta,
+ *  Nombre de la funciÃƒÂ³n: MFRC522_Request
+ *  DescripciÃƒÂ³n: Buscar las cartas, leer el nÃƒÂºmero de tipo de tarjeta
+ *  Los parÃƒÂ¡metros de entrada: reqMode - encontrar el modo de tarjeta,
  *			   Tagtype - Devuelve el tipo de tarjeta
  *			 	0x4400 = Mifare_UltraLight
  *				0x0400 = Mifare_One(S50)
@@ -341,7 +341,7 @@ uint8_t RFID::MFRC522ToCard(uint8_t command, uint8_t *sendData, uint8_t sendLen,
 uint8_t  RFID::MFRC522Request(uint8_t reqMode, uint8_t *TagType)
 {
 	uint8_t status;  
-	uint16_t backBits;			//   RecibiÃ³ bits de datos
+	uint16_t backBits;			//   RecibiÃƒÂ³ bits de datos
 
 	writeMFRC522(BitFramingReg, 0x07);		//TxLastBists = BitFramingReg[2..0]	???
 
@@ -358,8 +358,8 @@ uint8_t  RFID::MFRC522Request(uint8_t reqMode, uint8_t *TagType)
 
 /**
  *  MFRC522Anticoll -> anticoll
- *  Anti-detecciÃ³n de colisiones, la lectura del nÃºmero de serie de la tarjeta de tarjeta
- *  @param serNum - devuelve el nÃºmero de tarjeta 4 bytes de serie, los primeros 5 bytes de bytes de paridad
+ *  Anti-detecciÃƒÂ³n de colisiones, la lectura del nÃƒÂºmero de serie de la tarjeta de tarjeta
+ *  @param serNum - devuelve el nÃƒÂºmero de tarjeta 4 bytes de serie, los primeros 5 bytes de bytes de paridad
  *  @return retorno exitoso MI_OK
  */
 uint8_t RFID::anticoll(uint8_t *serNum)
@@ -380,7 +380,7 @@ uint8_t RFID::anticoll(uint8_t *serNum)
 
     if (status == MI_OK)
 	{
-		//?????? Compruebe el nÃºmero de serie de la tarjeta
+		//?????? Compruebe el nÃƒÂºmero de serie de la tarjeta
 		for (i=0; i<4; i++)
 		{   
 		 	serNumCheck ^= serNum[i];
@@ -398,13 +398,13 @@ uint8_t RFID::anticoll(uint8_t *serNum)
 
 /* 
  * MFRC522Auth -> auth
- * Verificar la contraseÃ±a de la tarjeta
- * Los parÃ¡metros de entrada: AuthMode - Modo de autenticaciÃ³n de contraseÃ±a
-                 0x60 = A 0x60 = validaciÃ³n KeyA
-                 0x61 = B 0x61 = validaciÃ³n KeyB
+ * Verificar la contraseÃƒÂ±a de la tarjeta
+ * Los parÃƒÂ¡metros de entrada: AuthMode - Modo de autenticaciÃƒÂ³n de contraseÃƒÂ±a
+                 0x60 = A 0x60 = validaciÃƒÂ³n KeyA
+                 0x61 = B 0x61 = validaciÃƒÂ³n KeyB
              BlockAddr--  bloque de direcciones
-             Sectorkey-- sector contraseÃ±a
-             serNum--,4? Tarjeta de nÃºmero de serie, 4 bytes
+             Sectorkey-- sector contraseÃƒÂ±a
+             serNum--,4? Tarjeta de nÃƒÂºmero de serie, 4 bytes
  * MI_OK Valor de retorno: el retorno exitoso MI_OK
  */
 uint8_t RFID::auth(uint8_t authMode, uint8_t BlockAddr, uint8_t *Sectorkey, uint8_t *serNum)
@@ -414,7 +414,7 @@ uint8_t RFID::auth(uint8_t authMode, uint8_t BlockAddr, uint8_t *Sectorkey, uint
     uint8_t i;
 	uint8_t buff[12]; 
 
-	//????+???+????+???? Verifique la direcciÃ³n de comandos de bloques del sector + + contraseÃ±a + nÃºmero de la tarjeta de serie
+	//????+???+????+???? Verifique la direcciÃƒÂ³n de comandos de bloques del sector + + contraseÃƒÂ±a + nÃƒÂºmero de la tarjeta de serie
     buff[0] = authMode;
     buff[1] = BlockAddr;
     for (i=0; i<6; i++)
@@ -438,7 +438,7 @@ uint8_t RFID::auth(uint8_t authMode, uint8_t BlockAddr, uint8_t *Sectorkey, uint
 /*
  * MFRC522Read -> read
  * Lectura de datos de bloque
- * Los parÃ¡metros de entrada: blockAddr - direcciÃ³n del bloque; recvData - leer un bloque de datos
+ * Los parÃƒÂ¡metros de entrada: blockAddr - direcciÃƒÂ³n del bloque; recvData - leer un bloque de datos
  * MI_OK Valor de retorno: el retorno exitoso MI_OK
  */
 uint8_t RFID::read(uint8_t blockAddr, uint8_t *recvData)
@@ -462,7 +462,7 @@ uint8_t RFID::read(uint8_t blockAddr, uint8_t *recvData)
 /*
  * MFRC522Write -> write
  * La escritura de datos de bloque
- * blockAddr - direcciÃ³n del bloque; WriteData - para escribir 16 bytes del bloque de datos
+ * blockAddr - direcciÃƒÂ³n del bloque; WriteData - para escribir 16 bytes del bloque de datos
  * Valor de retorno: el retorno exitoso MI_OK
  */
 uint8_t RFID::write(uint8_t blockAddr, uint8_t *writeData)
@@ -504,7 +504,7 @@ uint8_t RFID::write(uint8_t blockAddr, uint8_t *writeData)
 /*
  * MFRC522Halt -> halt
  * Cartas de Mando para dormir
- * Los parÃ¡metros de entrada: Ninguno
+ * Los parÃƒÂ¡metros de entrada: Ninguno
  * Valor devuelto: Ninguno
  */
 void RFID::halt()
