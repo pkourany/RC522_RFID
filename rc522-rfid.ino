@@ -1,4 +1,3 @@
-
 /* FILE:    RC522_RFID_Module_Example
    DATE:    23/03/14
    VERSION: 0.2 Spark
@@ -71,8 +70,13 @@ REASON WHATSOEVER.
 void setup()
 { 
   Serial.begin(9600);
+  
   /* Enable the SPI interface */
-  SPI.begin(); 
+  SPI.setDataMode(SPI_MODE0);
+  SPI.setBitOrder(MSBFIRST);
+  SPI.setClockDivider(SPI_CLOCK_DIV8);
+  SPI.begin();
+  
   /* Initialise the RFID reader */
   RC522.init();
 }
