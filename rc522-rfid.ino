@@ -1,8 +1,10 @@
 /* FILE:    RC522_RFID_Module_Example
    DATE:    23/03/14
-   VERSION: 0.2 Spark
+   VERSION: 0.2.1 Spark
 
 REVISIONS:
+
+29/08/16    Version 0.2.1, modified by ScruffR: corrected Software SPI sample
 
 23/03/14    Version 0.2, modified by Paul Kourany to run on Spark Core
             with added support for Software SPI
@@ -60,10 +62,10 @@ REASON WHATSOEVER.
 #define SCK_PIN     D5      //     "     " : A3
 
 /* Create an instance of the RFID library */
-#if defined(_USE_SOFT_SPI)
-    RFID(int chipSelectPin, int NRSTPD, uint8_t mosiPin, uint8_t misoPin, uint8_t clockPin);    // Software SPI
+#if defined(_USE_SOFT_SPI_)
+    RFID RC522(SS_PIN, RST_PIN, MOSI_PIN, MISO_PIN, SCK_PIN);    // Software SPI
 #else
-    RFID RC522(SS_PIN, RST_PIN);    // Hardware SPI
+    RFID RC522(SS_PIN, RST_PIN);                                 // Hardware SPI
 #endif
 
 
@@ -71,12 +73,14 @@ void setup()
 { 
   Serial.begin(9600);
   
-  /* Enable the SPI interface */
+#if !defined(_USE_SOFT_SPI_)
+  /* Enable the HW SPI interface */
   SPI.setDataMode(SPI_MODE0);
   SPI.setBitOrder(MSBFIRST);
   SPI.setClockDivider(SPI_CLOCK_DIV8);
   SPI.begin();
-  
+#endif
+
   /* Initialise the RFID reader */
   RC522.init();
 }
