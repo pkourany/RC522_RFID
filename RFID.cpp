@@ -524,22 +524,23 @@ void RFID::halt()
 
 inline __attribute__((always_inline))
 uint8_t RFID::softSPITranser(uint8_t data) {
-	
-	uint8_t b=0;
 
-	for (uint8_t bit = 0; bit < 8; bit++)  {
-		if (data & (1 << (7-bit)))		// walks down mask from bit 7 to bit 0
-		PIN_MAP[_mosiPin].gpio_peripheral->BSRR = PIN_MAP[_mosiPin].gpio_pin; // Data High
-		else
-		PIN_MAP[_mosiPin].gpio_peripheral->BRR = PIN_MAP[_mosiPin].gpio_pin; // Data Low
+  uint8_t b=0;
+
+  for (uint8_t bit = 0; bit < 8; bit++) {
+    if (data & (1 << (7-bit)))		// walks down mask from bit 7 to bit 0
+      pinSetFast(_mosiPin); // Data High
+    else
+      pinResetFast(_mosiPin); // Data Low
 		
-		PIN_MAP[_clockPin].gpio_peripheral->BSRR = PIN_MAP[_clockPin].gpio_pin; // Clock High
+    pinSetFast(_clockPin); // Clock High
 
-		b <<= 1;
-		if (PIN_MAP[_misoPin].gpio_peripheral->IDR & PIN_MAP[_misoPin].gpio_pin)
-		b |= 1;
+    b <<= 1;
+    if (pinReadFast(_misoPin))
+      b |= 1;
 
-		PIN_MAP[_clockPin].gpio_peripheral->BRR = PIN_MAP[_clockPin].gpio_pin; // Clock Low
-	}
-	return b;
+    pinResetFast(_clockPin); // Clock Low
+  }
+  return b;
+
 }
